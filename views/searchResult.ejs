@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search Result</title>
+</head>
+<body>
+  <% if (user) { %>
+    <h1>User Found:</h1>
+    <p>Name: <%= user.name %></p>
+    <p>Email: <%= user.email %></p>
+    <!-- Hiển thị các thông tin khác của người dùng -->
+  <% } else { %>
+    <h1>User Not Found</h1>
+  <% } %>
+
+  <% if (errors.length > 0) { %>
+    <h2>Error:</h2>
+    <ul>
+      <% for (let i = 0; i < errors.length; i++) { %>
+        <li><%= errors[i] %></li>
+      <% } %>
+    </ul>
+  <% } %>
+</body>
+</html>
