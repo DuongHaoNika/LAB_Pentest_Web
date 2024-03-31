@@ -13,6 +13,9 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      mynet:
+        ipv4_address: 192.168.48.10
     restart: always
 
   web:
@@ -21,9 +24,20 @@ services:
       - "3000:3000"
     volumes:
       - .:/code
+    networks:
+      mynet:
+        ipv4_address: 192.168.48.6
+    command: echo "cham hoi cham hoi"
     depends_on:
       - db
     tty: true
 
 volumes:
   db-data:
+
+networks:
+  mynet:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.48.0/20"
