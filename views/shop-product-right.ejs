@@ -819,7 +819,7 @@
                                             <!-- MAIN SLIDES -->
                                             <div class="product-image-slider">
                                                 <figure class="border-radius-10">
-                                                    <img src="imgs/shop/product-16-2.jpg" alt="product image" />
+                                                    <img src="<%= product.picture%>" alt="product image" />
                                                 </figure>
                                                 <figure class="border-radius-10">
                                                     <img src="imgs/shop/product-16-1.jpg" alt="product image" />
@@ -856,7 +856,7 @@
                                     <div class="col-md-6 col-sm-12 col-xs-12">
                                         <div class="detail-info pr-30 pl-30">
                                             <span class="stock-status out-stock"> Sale Off </span>
-                                            <h2 class="title-detail">Seeds of Change Organic Quinoa, Brown</h2>
+                                            <h2 class="title-detail"><%= product.title%></h2>
                                             <div class="product-detail-rating">
                                                 <div class="product-rate-cover text-end">
                                                     <div class="product-rate d-inline-block">
@@ -867,15 +867,15 @@
                                             </div>
                                             <div class="clearfix product-price-cover">
                                                 <div class="product-price primary-color float-left">
-                                                    <span class="current-price text-brand">$38</span>
+                                                    <span class="current-price text-brand">$<%=(product.price * (product.discountValue / 100)).toFixed(2)%></span>
                                                     <span>
-                                                        <span class="save-price font-md color3 ml-15">26% Off</span>
-                                                        <span class="old-price font-md ml-15">$52</span>
+                                                        <span class="save-price font-md color3 ml-15"><%=product.discountValue%>% Off</span>
+                                                        <span class="old-price font-md ml-15">$<%=product.price%></span>
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="short-desc mb-30">
-                                                <p class="font-lg">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam rem officia, corrupti reiciendis minima nisi modi, quasi, odio minus dolore impedit fuga eum eligendi.</p>
+                                                <p class="font-lg"><%= product.description%></p>
                                             </div>
                                             <div class="attr-detail attr-size mb-30">
                                                 <strong class="mr-10">Size / Weight: </strong>

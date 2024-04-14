@@ -62,4 +62,4 @@ async function deleteProduct(id) {
   }
 }
 
-export default { getAllProducts };
+export default { getAllProducts, getProductById };
