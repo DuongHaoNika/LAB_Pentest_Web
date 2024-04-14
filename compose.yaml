@@ -15,7 +15,7 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       mynet:
-        ipv4_address: 192.168.48.10
+        ipv4_address: 173.168.0.5
     restart: always
 
   web:
@@ -26,8 +26,7 @@ services:
       - .:/code
     networks:
       mynet:
-        ipv4_address: 192.168.48.6
-    command: echo "cham hoi cham hoi"
+        ipv4_address: 173.168.0.9
     depends_on:
       - db
     tty: true
@@ -40,4 +39,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: "192.168.48.0/20"
+        - subnet: 173.168.0.0/16

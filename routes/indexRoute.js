@@ -6,7 +6,7 @@ const indexRoute = express.Router();
 
 indexRoute.get("/", indexController.getIndex);
 
-indexRoute.get("/:page", dynamicRoute);
+// indexRoute.get("/:page", dynamicRoute);
 
 //BUG: https://github.com/mde/ejs/issues/720
 // indexRoute.get("/", (req, res) => {
