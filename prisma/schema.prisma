@@ -264,7 +264,7 @@ model Slideshow {
 }
 
 model VulnSetting {
-  id     Int     @id @default(autoincrement())
-  name   String  @unique
-  status Boolean @default(false)
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  status String @default("No")
 }
