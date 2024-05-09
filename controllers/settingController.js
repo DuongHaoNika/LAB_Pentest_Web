@@ -1,9 +1,12 @@
 import settingService from "../services/settingService";
 const getIndex = async (req, res) => {
   const settings = await settingService.getAllSetting();
-  res.render("settings", {
-    settings,
-  });
+  if(typeof (req.session) == "undefined") res.render("settings", { settings });
+  else {
+    const update = req.session.update;
+    delete req.session.update;
+    res.render("settings", { settings, update: update });
+  }
 };
 
 const updateSetting = async (req, res) => {
@@ -15,7 +18,8 @@ const updateSetting = async (req, res) => {
     catch(err){
       console.log(err)
     }
-  }  
+  }
+  req.session.update = {message: "Updated successfully!"};
   res.redirect("/settings");
 };
 

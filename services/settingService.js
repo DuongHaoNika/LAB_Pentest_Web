@@ -13,13 +13,12 @@ async function getAllSetting() {
 
 async function updateSetting(id, status) {
   try {
-    const active = parseInt(status)
     const result = await prisma.vulnSetting.update({
       where: { 
         id: parseInt(id)
       },
       data: {
-        status: (active == 1) ? true : false
+        status: status
       },
     });
     return result;
