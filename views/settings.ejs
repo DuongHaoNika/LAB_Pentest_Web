@@ -23,6 +23,13 @@
 
 <body>
     <%- include("partials/header/header") %>
+
+    <% if(typeof(update) != "undefined") { %>
+        <div class="register-ok">
+            <p><%= update.message %></p>
+        </div>
+    <% } %>
+
     <p class="h1 text-center" style="margin-top: 50px;">Settings Vulnerability</p>
     <div class="container my-5 set-vul">
         <form action="/settings" method="post" id="settingform">
@@ -35,13 +42,23 @@
                             <div class="input-group mb-3" style="height: 40px;">
                                 <label class="input-group-text vul-name" style="height: 100%;" for="<%= setting.id%>"><%= setting.name %></label>
                                 <select class="vul-select" style="height: 100%;" id="<%= setting.id%>" name="<%= setting.id%>" form="settingform">
-                                    <% if (setting.status) { %>
-                                        <option value="0">No</option>
-                                        <option value="1" selected>Yes</option>
-                                    <% } else {%>
-                                        <option value="0" selected>No</option>
-                                        <option value="1">Yes</option>
-                                    <% } %>
+                                    <% if(setting.name=="JWT") {%>
+                                        <% if (setting.status == "No") { %>
+                                            <option value="No" selected>No</option>
+                                            <option value="No-Alg">No Alg</option>
+                                        <% } else {%>
+                                            <option value="No-Alg" selected>No Alg</option>
+                                            <option value="No">No</option>
+                                        <% } %>
+                                    <% }else{%>
+                                        <% if (setting.status == "Yes") { %>
+                                            <option value="No">No</option>
+                                            <option value="Yes" selected>Yes</option>
+                                        <% } else {%>
+                                            <option value="No" selected>No</option>
+                                            <option value="Yes">Yes</option>
+                                        <% } %>
+                                    <% }%>
                                 </select>
                             </div>
                         </div>

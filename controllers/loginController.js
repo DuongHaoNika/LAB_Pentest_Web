@@ -28,7 +28,7 @@ const handleLogin = async (req, res) => {
       throw new Error("User or Password is Incorrect!");
     }
     const token = jsonwebtoken.sign(
-      { id: result[0].id, username: username },
+      { id: result[0].id, username: username, isadmin: false },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
