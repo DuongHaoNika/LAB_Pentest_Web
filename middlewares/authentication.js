@@ -73,6 +73,25 @@ const Authentication = async (req, res, next) => {
                 const publicKey = jwkToPem(rsaKey)
                 await jwt.verify(jwtToken, publicKey)
             }
+            else if (jwtStatus.status === "Weak-Key") {
+                try {
+                    const secretsFilePath = path.join(__dirname, '../helper/key/used_jwt.txt');
+                    const secrets = fs.readFileSync(secretsFilePath, 'utf8').split('\n').filter(secret => secret.trim() !== '');
+                    console.log(secrets)
+            
+                    if (secrets.length === 0) {
+                        throw new Error('No secrets found in the file.');
+                    }
+            
+                    const jwtsecret = secrets[0];
+            
+                    jwt.verify(jwtToken, jwtsecret);
+            
+                } catch (error) {
+                    console.error("Error while verifying JWT token:", error);
+                    return res.status(401).json({ error: 'Invalid token' });
+                }
+            }
             else if(jwtStatus.status == "No"){
                 const key = fs.readFileSync(path.join(__dirname, "../helper/key/publicKey.pem"), 'utf-8')
                 jwt.verify(jwtToken, key)
