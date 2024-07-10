@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../models/prisma";
 import bcrypt from "bcrypt";
 const { faker } = require("@faker-js/faker");
-
-const prisma = new PrismaClient();
 
 async function createNewUser(username, email, password) {
     try {

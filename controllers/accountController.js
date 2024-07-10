@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from "bcrypt";
 import ejs from "ejs";
 import { readTemplateFile } from "../configs/template.conf";
@@ -8,7 +7,7 @@ import path from "path"
 import axios from 'axios';
 import jwkToPem from "jwk-to-pem"
 
-const prisma = new PrismaClient();
+import prisma from "../models/prisma";
 
 // [GET] /page-account
 const getAccount = async (req, res) => {
@@ -117,7 +116,6 @@ const setInfoAccount = async (req, res) => {
             req.session.err = {message: "Firstname or Lastname have character in blacklists!"}
             return res.redirect('/page-account')
           } else {
-            console.log(firstname, lastname)
             await prisma.userInfo.update({
               where: { userId: userId },
               data: { firstName: firstname, lastName: lastname, email: email, bio: bio }

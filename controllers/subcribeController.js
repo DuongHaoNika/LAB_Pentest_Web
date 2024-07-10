@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "../models/prisma";
 import libxmljs  from "libxmljs";
 // import session from 'express-session';
 
-const prisma = new PrismaClient();
 
 // const getPageEmail = (req, res) => {
 //     return res.render("index");

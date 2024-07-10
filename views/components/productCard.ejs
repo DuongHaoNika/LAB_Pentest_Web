@@ -2,7 +2,7 @@
   <div class="product-cart-wrap mb-30">
     <div class="product-img-action-wrap">
       <div class="product-img product-img-zoom">
-        <a href="product?id=<%= product.id%>">
+        <a href="product?id=<%= product.slug%>">
           <img class="default-img" src="<%= product.picture %>" alt="" />
           <img class="hover-img" src="<%= product.picture %>" alt="" />
         </a>
@@ -30,7 +30,7 @@
       <div class="product-category">
         <a href="shop-grid-right">Snack</a>
       </div>
-      <h2><a href="product?id=<%= product.id%>"><%= product.title%></a></h2>
+      <h2><a href="product?id=<%= product.slug%>"><%= product.title%></a></h2>
       <div class="product-rate-cover">
         <div class="product-rate d-inline-block">
           <div class="product-rating" style="width: 90%"></div>

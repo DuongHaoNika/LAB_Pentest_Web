@@ -1,10 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import prisma from "../models/prisma";
 import bcrypt from 'bcrypt';
 import fs from 'fs';
 import path from 'path';
-
-const prisma = new PrismaClient();
 
 const getPageLogin = (req, res) => {
   res.clearCookie("jwt");

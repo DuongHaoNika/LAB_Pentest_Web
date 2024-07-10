@@ -1,11 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import prisma from "../models/prisma";
 import fs from 'fs'
 import path from 'path'
 import axios from 'axios';
 import jwkToPem from "jwk-to-pem"
-
-const prisma = new PrismaClient()
 
 const adminPage = async (req, res) => {
     const jwtStatus = await prisma.vulnSetting.findUnique({

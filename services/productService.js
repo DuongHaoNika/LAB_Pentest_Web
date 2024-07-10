@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../models/prisma";
+import { faker } from "@faker-js/faker";
+const entities = require("entities")
 
 async function getAllProducts() {
   try {
@@ -12,11 +12,11 @@ async function getAllProducts() {
 }
 
 // get a product
-async function getProductById(id) {
+async function getProductById(slug) {
   try {
     const result = await prisma.product.findUnique({
       where: {
-        id: id,
+        slug: slug,
       },
     });
     return result;
@@ -27,7 +27,7 @@ async function getProductById(id) {
 
 async function getProductByName(name) {
   try {
-    const result = await prisma.product.findUnique({
+    const result = await prisma.product.findFirst({
       where: {
         title: name,
       },
@@ -38,18 +38,53 @@ async function getProductByName(name) {
   }
 }
 
-// create a product
-async function createProduct(data) {
+// add a product
+async function addProduct(title, summary, picture, price, description) {
+  try{
+    const xssStatus = await prisma.vulnSetting.findUnique({
+      where: {
+        name: "XSS"
+      }
+    })
+    if(xssStatus.status == "No"){
+      title = entities.encodeHTML(title)
+      summary = entities.encodeHTML(summary)
+      picture = entities.encodeHTML(picture)
+      price = entities.encodeHTML(price)
+      description = entities.encodeHTML(description)
+    }
+  }
+  catch(err){
+    console.log(err)
+  }
+  const slug = faker.helpers.slugify(title + "-" + faker.string.uuid())
+  const categoryId = 1
+  const vendorId = 5
+  const discountType = faker.helpers.arrayElement(["percentage", "fixed"])
+  const discountValue = faker.number.int({ min: 10, max: 50 })
+  price = parseFloat(price)
   try {
+    const cnt = await prisma.product.count()
     const result = await prisma.product.create({
-      data: data,
+      data: {
+        id: cnt + 1,
+        title: title,
+        summary: summary,
+        picture: picture,
+        price: price,
+        description: description,
+        slug: slug,
+        categoryId: categoryId,
+        discountType: discountType,
+        discountValue: discountValue,
+        vendorId: vendorId
+      }
     });
     return result;
   } catch (err) {
     console.log(err);
   }
 }
-
 
 // update a product
 async function updateProduct(id, data) {
@@ -65,15 +100,14 @@ async function updateProduct(id, data) {
 }
 
 // delete a product
-async function deleteProduct(id) {
+async function deleteProduct(slug) {
   try {
-    const result = await prisma.product.delete({
-      where: { id: id },
+    await prisma.product.delete({
+      where: { slug: slug },
     });
-    return result;
   } catch (err) {
     console.log(err);
   }
 }
 
-export default { getAllProducts, getProductById, getProductByName };
+export default { getAllProducts, getProductById, getProductByName, addProduct, updateProduct, deleteProduct};
