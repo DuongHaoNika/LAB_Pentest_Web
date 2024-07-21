@@ -23,7 +23,11 @@
             <div class="input-group">
               <span class="input-group-text" id="basic-addon3">Image URL</span>
               <input name="picture" type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4">
+              <button id="preview-btn" type="button" class="btn btn-secondary">Preview</button>
             </div>
+          </div>
+          <div id="previewContainer">
+
           </div>
           
           <div class="input-group mb-3">
@@ -43,8 +47,31 @@
           </div>
           <button style="margin-top: 20px;" type="submit" class="btn btn-success">Submit</button>
         </form>
-        <!-- <button style="margin-top: 20px;" type="submit" class="btn btn-success">Submit</button> -->
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+      document.getElementById('preview-btn').addEventListener('click', () => {
+        const imageUrl = document.getElementById('basic-url').value;
+        console.log(imageUrl)
+        const previewContainer = document.getElementById('previewContainer');
+        previewContainer.innerHTML = '';
+
+        if (imageUrl) {
+            fetch(`/product/add/previewImage?url=${imageUrl}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.text())
+            .then(data => {
+                previewContainer.innerHTML = data;
+            })
+            .catch(error => {
+                previewContainer.innerHTML = 'Error fetching image.';
+            });
+        }
+      })
+    </script>
 </body>
 </html>

@@ -9,6 +9,7 @@ productRoute.get("/add", productController.addProduct)
 productRoute.get("/manage", productController.manageProduct)
 productRoute.get("/:slug/edit", productController.editProduct)
 productRoute.post("/add", productController.AddProduct)
+productRoute.get("/add/previewImage", productController.previewImage)
 productRoute.delete("/delete/:slug", productController.deleteProduct)
 
 //BUG: https://github.com/mde/ejs/issues/720

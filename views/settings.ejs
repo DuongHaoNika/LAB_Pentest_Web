@@ -221,6 +221,20 @@
                                             <option value="Reflected XSS">Reflected XSS</option>
                                             <option value="Stored XSS" selected>Stored XSS</option>
                                         <% } %>
+                                    <% } else if(setting.name == "SSRF") { %>
+                                        <% if(setting.status == "No") { %> 
+                                            <option value="No" selected>No</option>
+                                            <option value="Easy">Easy</option>
+                                            <option value="Medium">Medium</option>
+                                        <% } else if(setting.status == "Easy") { %>
+                                            <option value="No">No</option>
+                                            <option value="Easy" selected>Easy</option>
+                                            <option value="Medium">Medium</option>
+                                        <% } else { %>
+                                            <option value="No">No</option>
+                                            <option value="Easy">Easy</option>
+                                            <option value="Medium" selected>Medium</option>
+                                        <% } %>
                                     <% } else { %>
                                         <% if (setting.status == "Yes") { %>
                                             <option value="No">No</option>

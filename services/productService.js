@@ -1,5 +1,7 @@
 import prisma from "../models/prisma";
 import { faker } from "@faker-js/faker";
+import validateUrl from "../validations/urlValidation"
+import axios from "axios";
 const entities = require("entities")
 
 async function getAllProducts() {
@@ -110,4 +112,29 @@ async function deleteProduct(slug) {
   }
 }
 
-export default { getAllProducts, getProductById, getProductByName, addProduct, updateProduct, deleteProduct};
+async function previewImage(url){
+  try{
+    const ssrfStatus = await prisma.vulnSetting.findUnique({
+      where: {
+        name: "SSRF"
+      }
+    })
+    if(ssrfStatus.status === "No"){
+      if (!validateUrl.isExternalUrl(url)) {
+        throw new Error('Invalid URL')
+      }
+      const ipAddress = await validateUrl.resolveHostname(url);
+      if (!ipAddress) {
+        throw new Error('Invalid URL')
+      }
+    }
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(response.data, 'binary').toString('base64');
+    return imageBuffer
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+
+export default { getAllProducts, getProductById, getProductByName, addProduct, updateProduct, deleteProduct, previewImage};

@@ -16,9 +16,9 @@ import shopCartRoute from "./shopcart";
 const initWebRoutes = (app) => {
   app.use("/", indexRoute);
   app.use("/index", indexRoute);
+  app.use("/settings", settingRoute);
   app.use(Authen)
   app.use("/product", productRoute);
-  app.use("/settings", settingRoute);
   app.use("/page-account", pageAccountRoute)
   app.use("/page-login", loginRoute)
   app.use("/page-register", registerRoute)
