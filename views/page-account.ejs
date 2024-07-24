@@ -219,6 +219,9 @@
                                                                 <label>Email Address <span class="required">*</span></label>
                                                                 <input required="" value="<%= userInfo.email %>" class="form-control" name="email" type="email" />
                                                             </div>
+                                                            <% if(idorStt === "Yes") {%>
+                                                                <input require="" hidden value="<%= userId %>" class="form-control" name="id"/>
+                                                            <% } %>
                                                             <div class="col-md-12">
                                                                 <button type="submit" class="btn btn-fill-out submit font-weight-bold">Save Change</button>
                                                             </div>

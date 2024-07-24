@@ -16,7 +16,11 @@ const getAccount = async (req, res) => {
       name: "JWT"
     }
   })
-
+  const idorStatus = await prisma.vulnSetting.findUnique({
+    where: {
+      name: "IDOR"
+    }
+  })
   const token = req.cookies.jwt;
   let mysecretkey = process.env.JWT_SECRET
   const encodedHeader = token.split(".")[0]
@@ -60,7 +64,7 @@ const getAccount = async (req, res) => {
         delete req.session.update
         const errPw = req.session.err
         delete req.session.err
-        return res.render('page-account', { userInfo: userInfo[0], update: update, err: errPw});
+        return res.render('page-account', { userInfo: userInfo[0], userId, update: update, err: errPw, idorStt: idorStatus.status});
       } catch (error) {
         return res.status(500).send(error);
       }
@@ -73,6 +77,11 @@ const setInfoAccount = async (req, res) => {
   const jwtStatus = await prisma.vulnSetting.findUnique({
     where:{
       name: "JWT"
+    }
+  })
+  const idorStatus = await prisma.vulnSetting.findUnique({
+    where: {
+      name: "IDOR"
     }
   })
   const token = req.cookies.jwt;
@@ -107,45 +116,50 @@ const setInfoAccount = async (req, res) => {
         return res.status(500).send(err);
       } else {
         try {
-          const userId = result.id;
-          const { firstname, lastname, email, bio} = req.body;
-          const blacklist = ['=', 'exec', 'execSync', 'localLoad', 'constructor'];
-          const isBlacklisted = blacklist.some(char => firstname.includes(char) || lastname.includes(char));
-            
-          if (isBlacklisted) {
-            req.session.err = {message: "Firstname or Lastname have character in blacklists!"}
-            return res.redirect('/page-account')
-          } else {
+          if(idorStatus.status === "No"){
+            const userId = result.id;
+            const { firstname, lastname, email, bio} = req.body;
             await prisma.userInfo.update({
               where: { userId: userId },
               data: { firstName: firstname, lastName: lastname, email: email, bio: bio }
             });
-
-            const sstiStatus = await prisma.vulnSetting.findUnique({
-              where: { name: "SSTI" }
+          }
+          else {
+            console.log(req.body)
+            const { firstname, lastname, email, bio, id} = req.body;
+            let idd = parseInt(id)
+            await prisma.userInfo.update({
+              where: { userId: idd },
+              data: { firstName: firstname, lastName: lastname, email: email, bio: bio }
             });
+            // let idd = parseInt(id)
+            // await prisma.$queryRaw`UPDATE "public"."UserInfo" SET "firstName"=${firstname}, "lastName"=${lastname}, "email"=${email}, "bio"=${bio} WHERE id=${idd}`
+          }
+          const sstiStatus = await prisma.vulnSetting.findUnique({
+            where: { name: "SSTI" }
+          });
 
-            if (sstiStatus && sstiStatus.status === "Yes") {
-              const userInfo = await prisma.$queryRaw`
-                SELECT "UserInfo"."firstName", "UserInfo"."lastName", "UserInfo"."email", "UserInfo"."bio"
-                FROM public."Credential"
-                JOIN public."UserInfo" ON "Credential"."userId" = ${userId} AND "UserInfo"."userId" = ${userId}`;
+          if (sstiStatus && sstiStatus.status === "Yes") {
+            const userInfo = await prisma.$queryRaw`
+              SELECT "UserInfo"."id", "UserInfo"."firstName", "UserInfo"."lastName", "UserInfo"."email", "UserInfo"."bio"
+              FROM public."Credential"
+              JOIN public."UserInfo" ON "Credential"."userId" = ${userId} AND "UserInfo"."userId" = ${userId}`;
 
-              try {
-                const templateData = readTemplateFile(); // Sử dụng hàm đọc template từ templateConfig.js
-                let accountProfile = templateData.replace("<%= userInfo.firstName %>",firstname).replace("<%= userInfo.lastName %>", lastname)
-                const renderProfile = ejs.render(accountProfile, { userInfo: userInfo[0], update: { message: "Updated Successfully!" } });
-                return res.send(renderProfile);
-              } catch (error) {
-                console.log(error)
-                return res.status(500).send(error);
-              }
-            } else {
-              req.session.update = {message: "Updated Successfully!"};
-              return res.redirect('/page-account');
+            try {
+              const templateData = readTemplateFile(); // Sử dụng hàm đọc template từ templateConfig.js
+              let accountProfile = templateData.replace("<%= userInfo.firstName %>",firstname).replace("<%= userInfo.lastName %>", lastname)
+              const renderProfile = ejs.render(accountProfile, { userInfo: userInfo[0], update: { message: "Updated Successfully!" } });
+              return res.send(renderProfile);
+            } catch (error) {
+              console.log(error)
+              return res.status(500).send(error);
             }
+          } else {
+            req.session.update = {message: "Updated Successfully!"};
+            return res.redirect('/page-account');
           }
         } catch (error) {
+          console.log('loi roi')
           return res.status(500).send(error);
         }
       }
@@ -158,37 +172,37 @@ const setInfoAccount = async (req, res) => {
 // [POST] page-account/password
 const setPassword = async (req, res) => {
   const token = req.cookies.jwt;
-  jwt.verify(token, process.env.JWT_SECRET, async (err, result) =>{
-    if(err) return res.status(500).send(err)
-    else{
-      const userId = result.id;
-      const {password, newpassword, cpassword} = req.body;
-      const user = await prisma.credential.findUnique({
-        where:{
-          id: userId
-        }
-      });
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if(!isMatch) {
-        req.session.err = {message: "Wrong Password!"}
-        return res.redirect('/page-account');
+  try{
+    const result = jwt.decode(token, process.env.JWT_SECRET)
+    const userId = result.id;
+    const {password, newpassword, cpassword, role} = req.body;
+    const user = await prisma.credential.findUnique({
+      where:{
+        id: userId
       }
-      else if(newpassword !== cpassword) {
-        req.session.err = {message: "New password doesn't match confirm password!"}
-        return res.redirect('/page-account');
-      }
-      else{
-        const hashedPassword = await bcrypt.hash(newpassword, 10);
-        await prisma.credential.update({
-          where: {userId: userId},
-          data: {password: hashedPassword}
-        });
-        req.session.update = {message: "Updated Successfully!"}
-        return res.redirect('/page-account');
-      }
+    });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if(!isMatch) {
+      req.session.err = {message: "Wrong Password!"}
+      return res.redirect('/page-account');
     }
-  });
+    else if(newpassword !== cpassword) {
+      req.session.err = {message: "New password doesn't match confirm password!"}
+      return res.redirect('/page-account');
+    }
+    else{
+      const hashedPassword = await bcrypt.hash(newpassword, 10);
+      await prisma.credential.update({
+        where: {userId: userId},
+        data: {password: hashedPassword}
+      });
+      req.session.update = {message: "Updated Successfully!"}
+      return res.redirect('/page-account');
+    }
+  }
+  catch(err){
+    return res.status(500).send(err)
+  }
 }
 
 export default { getAccount, setInfoAccount, setPassword };

@@ -91,13 +91,13 @@ const handleLogin = async (req, res) => {
       fs.writeFileSync(usedSecretsFilePath, jwtsecret);
 
       token = jwt.sign(
-        { id: result[0].id, username: username, isAdmin: false },
+        { id: result[0].id, username: username},
         jwtsecret,
         { expiresIn: '1h', header }
       );
     } else {
       token = jwt.sign(
-        { id: result[0].id, username: username, isAdmin: false },
+        { id: result[0].id, username: username},
         process.env.JWT_SECRET,
         { expiresIn: '5d', header }
       );
@@ -107,6 +107,7 @@ const handleLogin = async (req, res) => {
       httpOnly: true,
       maxAge: 10000 * 1000
     });
+
     return res.redirect("/");
   } catch (error) {
     res.render("page-login", { error: { message: error.message } });

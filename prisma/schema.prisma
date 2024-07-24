@@ -26,6 +26,7 @@ model Credential {
   username String @unique
   email    String
   password String
+  role     String @default("user")
   user     User?  @relation(fields: [userId], references: [id])
 }
 
